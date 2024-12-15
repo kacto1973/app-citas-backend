@@ -33,16 +33,20 @@ export default async function handler(req, res) {
           },
         ],
         back_urls: {
-          success: "http://localhost:3000/success",
-          failure: "http://localhost:3000/failure",
-          pending: "http://localhost:3000/pending",
+          success: "http://localhost:3000/api/success",
+          failure: "http://localhost:3000/api/failure",
+          pending: "http://localhost:3000/api/pending",
         },
+        auto_return: "approved",
         notification_url:
-          "https://5b49-2806-2f0-2461-f100-3439-25c7-af0e-a6e8.ngrok-free.app/api/webhook",
+          "https://69ec-2806-2f0-2461-f100-3439-25c7-af0e-a6e8.ngrok-free.app/api/webhook",
       };
 
       await preference.create({ body }).then((response) => {
-        res.status(200).json({ init_point: response.init_point });
+        res.status(200).json({
+          init_point: response.init_point,
+          sandbox_init_point: response.sandbox_init_point,
+        });
       });
 
       //regresar el init point
