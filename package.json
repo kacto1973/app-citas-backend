@@ -1,25 +1,16 @@
 {
-  "name": "backend",
+  "name": "app-citas-backend",
   "version": "1.0.0",
-  "description": "Backend para integrar Mercado Pago",
+  "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "mercadopago",
-    "backend",
-    "api"
-  ],
+  "type": "module",
+  "scripts": {},
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "mercadopago": "^2.1.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.3"
+    "dotenv": "^16.4.7",
+    "mercadopago": "^2.1.0",
+    "morgan": "^1.10.0"
   }
 }
