@@ -20,16 +20,16 @@ export default async function handler(req, res) {
 
       const preference = new Preference(client);
 
-      //const { amount } = req.body;
+      const { amount, description } = req.body;
 
       const body = {
         items: [
           {
             title: "Anticipo de Cita",
-            description: "anticipo de los servicios de su cita",
+            description: description,
             quantity: 1,
             currency_id: "MXN",
-            unit_price: 102,
+            unit_price: amount,
           },
         ],
         back_urls: {
@@ -39,10 +39,11 @@ export default async function handler(req, res) {
         },
         auto_return: "approved",
         notification_url:
-          "https://69ec-2806-2f0-2461-f100-3439-25c7-af0e-a6e8.ngrok-free.app/api/webhook",
+          "https://9c24-2806-2f0-2461-f100-3439-25c7-af0e-a6e8.ngrok-free.app/api/webhook",
       };
 
       await preference.create({ body }).then((response) => {
+        console.log("sandbox init point: ", response.sandbox_init_point);
         res.status(200).json({
           init_point: response.init_point,
           sandbox_init_point: response.sandbox_init_point,
