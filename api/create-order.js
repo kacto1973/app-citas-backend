@@ -20,26 +20,31 @@ export default async function handler(req, res) {
 
       const preference = new Preference(client);
 
-      const { amount, description } = req.body;
+      const { amount, description, external_reference } = req.body;
 
       const body = {
         items: [
           {
-            title: "Anticipo de Cita",
-            description: description,
+            title: description,
+            //description: description,
             quantity: 1,
             currency_id: "MXN",
             unit_price: amount,
           },
         ],
+        external_reference: external_reference,
         back_urls: {
-          success: "http://localhost:3000/api/success",
-          failure: "http://localhost:3000/api/failure",
-          pending: "http://localhost:3000/api/pending",
+          success: "https://mb-salon-citas.netlify.app/",
+          failure: "https://mb-salon-citas.netlify.app/",
+          pending: "https://mb-salon-citas.netlify.app/",
         },
         auto_return: "approved",
+        payment_methods: {
+          installments: 1, // Solo una cuota, elimina la opción de cuotas
+          exclude_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
+        },
         notification_url:
-          "https://9c24-2806-2f0-2461-f100-3439-25c7-af0e-a6e8.ngrok-free.app/api/webhook",
+          "https://5006-2806-2f0-2461-f100-671f-df25-e419-4aa5.ngrok-free.app/api/webhook",
       };
 
       await preference.create({ body }).then((response) => {
