@@ -1,16 +1,16 @@
 // firebaseFunctions.js
-import admin from "./firebaseConfig.js"; // Importa la configuración ya inicializada
-const database = admin.database();
+//import admin from "./firebaseConfig.js"; // Importa la configuración ya inicializada
+import database from "./firebaseConfig.js"; // Importa la configuración ya inicializada
+import { ref, update, get } from "firebase/database";
 
-// Función para actualizar el estado de una cita
 export async function updateAppointmentState(appointmentId, newState) {
-  const ref = database.ref(`/activeAppointments/${appointmentId}`);
+  const appointmentRef = ref(database, `/activeAppointments/${appointmentId}`);
   try {
     // Actualiza el estado
-    await ref.update({ state: newState });
+    await update(appointmentRef, { state: newState });
 
     // Verificación adicional
-    const updatedAppointment = await ref.once("value");
+    const updatedAppointment = await get(appointmentRef);
     const updatedState = updatedAppointment.val()?.state;
 
     // Verifica si el estado fue actualizado correctamente

@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import { getDatabase } from "firebase-admin/database"; // Importa getDatabase desde el módulo de base de datos
 
 // Carga el archivo de clave privada
 import serviceAccount from "./config/citas-app-7d6e1-firebase-adminsdk-8hlxx-a0b7cd5c54.json" assert { type: "json" };
@@ -10,5 +11,5 @@ admin.initializeApp({
 });
 
 // Exporta la referencia a la base de datos
-const database = admin.database();
+const database = getDatabase();
 export default database;
