@@ -13,7 +13,11 @@ export async function testWrite() {
   }
 }
 
-export async function updateAppointmentState(appointmentId, newState) {
+export async function updateAppointmentState(
+  appointmentId,
+  newState,
+  downPaymentAmount
+) {
   console.log("Database initialized:", database !== undefined);
   console.log("Nuevo estado a actualizar:", newState);
 
@@ -32,6 +36,17 @@ export async function updateAppointmentState(appointmentId, newState) {
       console.log(
         `Estado de la cita con ID ${appointmentId} actualizado correctamente a ${newState}`
       );
+
+      const totalCost = await get(
+        ref(database, `activeAppointments/${appointmentId}/totalCost`)
+      );
+
+      const newTotalCost = totalCost.val() - downPaymentAmount;
+
+      await update(ref(database, `activeAppointments/${appointmentId}`), {
+        totalCost: newTotalCost,
+      });
+
       return true;
     } else {
       console.error(

@@ -29,10 +29,15 @@ export default async function handler(req, res) {
               "actualizando el estado de pago en firebase para la cita con appointment ID de: ",
               paymentData.external_reference
             );
+            const paidAmount =
+              paymentData.transaction_details.total_paid_amount;
+            console.log("Monto pagado:", paidAmount);
+
             //await testWrite();
             await updateAppointmentState(
               paymentData.external_reference,
-              "pagado"
+              "pagado",
+              paidAmount
             );
           } else if (paymentData.status === "pending") {
             console.log("Pago pendiente: ", paymentData);
