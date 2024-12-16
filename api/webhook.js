@@ -1,4 +1,4 @@
-import { updateAppointmentState } from "../firebaseFunctions.js";
+import { updateAppointmentState, testWrite } from "../firebaseFunctions.js";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -22,14 +22,18 @@ export default async function handler(req, res) {
           console.log("Respuesta de la API de MercadoPago: ", paymentData);
           //verificamos el estado del pago
           if (paymentData.status === "approved") {
-            console.log("Pago aprobado: ", paymentData);
+            // console.log("Pago aprobado: ", paymentData);
 
             //actualizar estado de pago en firebase
             console.log(
               "actualizando el estado de pago en firebase para la cita con appointment ID de: ",
               paymentData.external_reference
             );
-            updateAppointmentState(paymentData.external_reference, "pagado");
+            //await testWrite();
+            await updateAppointmentState(
+              paymentData.external_reference,
+              "pagado"
+            );
           } else if (paymentData.status === "pending") {
             console.log("Pago pendiente: ", paymentData);
           } else {

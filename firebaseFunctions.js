@@ -1,10 +1,24 @@
 // firebaseFunctions.js
 //import admin from "./firebaseConfig.js"; // Importa la configuración ya inicializada
 import database from "./firebaseConfig.js"; // Importa la configuración ya inicializada
-import { ref, update, get } from "firebase/database";
+import { ref, update, get, set } from "firebase/database";
+
+export async function testWrite() {
+  const testRef = ref(database, "testNode");
+  try {
+    await set(testRef, { testKey: "testValue" });
+    console.log("Escritura exitosa en testNode");
+  } catch (error) {
+    console.error("Error escribiendo en testNode:", error);
+  }
+}
 
 export async function updateAppointmentState(appointmentId, newState) {
-  const appointmentRef = ref(database, `/activeAppointments/${appointmentId}`);
+  console.log("Database initialized:", database !== undefined);
+  console.log("Nuevo estado a actualizar:", newState);
+
+  const appointmentRef = ref(database, `activeAppointments/${appointmentId}`);
+
   try {
     // Actualiza el estado
     await update(appointmentRef, { state: newState });
