@@ -1,6 +1,9 @@
-import { updateAppointmentState, testWrite } from "../firebaseFunctions.js";
+import {
+  updateAppointmentState,
+  findAppointmentById,
+  testWrite,
+} from "../firebaseFunctions.js";
 import { sendPaymentReceipt } from "../twilioFunctions.js";
-import { findAppointmentById } from "../firebaseFunctions.js";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
