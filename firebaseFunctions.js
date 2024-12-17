@@ -43,6 +43,7 @@ export async function updateAppointmentState(
 
       const newTotalCost = totalCost.val() - downPaymentAmount;
 
+      //await update(appointmentRef, { state: newState });
       await update(ref(database, `activeAppointments/${appointmentId}`), {
         totalCost: newTotalCost,
       });
@@ -59,3 +60,28 @@ export async function updateAppointmentState(
     return false;
   }
 }
+
+export const findAppointmentById = async (appointmentId) => {
+  try {
+    const appointmentsRef = ref(database, "activeAppointments");
+
+    const appointmentsSnap = await get(appointmentsRef);
+
+    if (appointmentsSnap.exists()) {
+      const appointmentsArray = Object.values(appointmentsSnap.val());
+      const foundAppointment = appointmentsArray.find(
+        (appointment) => appointment.id === appointmentId
+      );
+
+      if (foundAppointment) {
+        return foundAppointment; // Retorna el objeto completo.
+      }
+    }
+
+    console.log("No se encontró una cita con ese ID: " + appointmentId);
+    return false;
+  } catch (error) {
+    console.error("Error al fetchear appointment por ID: " + error.message);
+    return false;
+  }
+};

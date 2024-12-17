@@ -1,4 +1,6 @@
 import { updateAppointmentState, testWrite } from "../firebaseFunctions.js";
+import { sendPaymentReceipt } from "../twilioFunctions.js";
+import { findAppointmentById } from "../firebaseFunctions.js";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -38,6 +40,19 @@ export default async function handler(req, res) {
               paymentData.external_reference,
               "pagado",
               paidAmount
+            );
+
+            const appointment = await findAppointmentById(
+              paymentData.external_reference
+            );
+
+            await sendPaymentReceipt(
+              "6624237920",
+              "Se ha recibido un nuevo anticipo:\n" +
+                `• Monto de: $${paidAmount}\n` +
+                `• Por parte de: ${appointment.userFullName}\n` +
+                `• Para la cita el día: ${appointment.selectedDate}\n` +
+                `• A las: ${appointment.selectedTime}`
             );
           } else if (paymentData.status === "pending") {
             console.log("Pago pendiente: ", paymentData);
