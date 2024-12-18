@@ -62,4 +62,6 @@ export default async function handler(req, res) {
     console.error("Error en limpieza:", error);
     return res.status(500).json({ error: "Error en limpieza." });
   }
+
+  //ahora enviamos notifcaciones a las clientas previas a su cita
 }
