@@ -1,6 +1,13 @@
 import { ref, get, remove } from "firebase/database";
 import database from "../firebaseConfig.js";
 
+/*en este cronjob limpiaremos las citas que no se pagaron
+a tiempo en 24 horas, con lo mismo de que sera cada dia limpiaremos
+las citas que obviamente fueron pagadas a tiempo y tengan una antiguedad
+mayor a 7 dias, ademas limpiaremos los dias de descanso que ya
+pasaron de hoy, esta limpia es buena hacerla cada dia y sera
+puesta en vercel, y limpiara todos los nodos, es 1 ejecucion al dia por todos */
+
 export default async function handler(req, res) {
   const appointmentsRef = ref(database, "activeAppointments");
   const now = new Date();
@@ -20,7 +27,7 @@ export default async function handler(req, res) {
         const createdAt = new Date(appointment.createdAt);
         const diffInHours = (now - createdAt) / (1000 * 60 * 60);
 
-        // Eliminar citas sin anticipo después de 12 horas
+        // Eliminar citas sin anticipo después de 12 horas (ahora son 24)
         if (appointment.state === "no pagado" && diffInHours >= 12) {
           await remove(ref(database, `activeAppointments/${key}`));
           console.log(`Cita ${key} eliminada por falta de anticipo.`);

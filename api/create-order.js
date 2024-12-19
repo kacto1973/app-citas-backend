@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
       const preference = new Preference(client);
 
-      const { amount, description, external_reference } = req.body;
+      const { amount, description, external_reference, business_id } = req.body;
 
       const body = {
         items: [
@@ -44,8 +44,14 @@ export default async function handler(req, res) {
           exclude_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
         notification_url:
-          "https://9251-2806-2f0-2461-f100-850f-bb64-eb5-ad7c.ngrok-free.app/api/webhook",
+          "https://3066-2806-2f0-2461-f100-1caa-4240-2191-d38e.ngrok-free.app/api/webhook",
+        business_id: business_id,
       };
+
+      console.log(
+        "se recibe este business id del front para hacerlo una orden en mercado pago: ",
+        business_id
+      );
 
       await preference.create({ body }).then((response) => {
         console.log("sandbox init point: ", response.sandbox_init_point);

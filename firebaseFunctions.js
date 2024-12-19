@@ -16,12 +16,23 @@ export async function testWrite() {
 export async function updateAppointmentState(
   appointmentId,
   newState,
-  downPaymentAmount
+  downPaymentAmount,
+  business_id
 ) {
   console.log("Database initialized:", database !== undefined);
   console.log("Nuevo estado a actualizar:", newState);
 
-  const appointmentRef = ref(database, `activeAppointments/${appointmentId}`);
+  const path = `businesses/${business_id}`;
+
+  const appointmentRef = ref(
+    database,
+    `${path}/activeAppointments/${appointmentId}`
+  );
+
+  console.log(
+    "la path entera que llego al update appointment state: ",
+    `${path}/activeAppointments/${appointmentId}`
+  );
 
   try {
     // Actualiza el estado
@@ -38,15 +49,18 @@ export async function updateAppointmentState(
       );
 
       const totalCost = await get(
-        ref(database, `activeAppointments/${appointmentId}/totalCost`)
+        ref(database, `${path}/activeAppointments/${appointmentId}/totalCost`)
       );
 
       const newTotalCost = totalCost.val() - downPaymentAmount;
 
       //await update(appointmentRef, { state: newState });
-      await update(ref(database, `activeAppointments/${appointmentId}`), {
-        totalCost: newTotalCost,
-      });
+      await update(
+        ref(database, `${path}/activeAppointments/${appointmentId}`),
+        {
+          totalCost: newTotalCost,
+        }
+      );
 
       return true;
     } else {
@@ -61,9 +75,11 @@ export async function updateAppointmentState(
   }
 }
 
-export const findAppointmentById = async (appointmentId) => {
+export const findAppointmentById = async (appointmentId, business_id) => {
   try {
-    const appointmentsRef = ref(database, "activeAppointments");
+    const path = `businesses/${business_id}`;
+
+    const appointmentsRef = ref(database, `${path}/activeAppointments`);
 
     const appointmentsSnap = await get(appointmentsRef);
 
