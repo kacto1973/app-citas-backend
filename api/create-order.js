@@ -1,4 +1,5 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import { getAccessToken } from "../firebaseFunctions.js";
 
 export default async function handler(req, res) {
   // Permitir solicitudes desde cualquier origen (puedes restringirlo a tu dominio)
@@ -13,14 +14,24 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     try {
+      const { amount, description, external_reference } = req.body;
+
+      const business_id = external_reference.business_id;
+
+      console.log(
+        "business_id que estamos pasando al getAccessToken: ",
+        business_id
+      );
+
+      const mp_at = await getAccessToken(business_id);
+
+      console.log("mp_at que se obtiene del getAccessToken: ", mp_at);
+
       const client = new MercadoPagoConfig({
-        accessToken:
-          "TEST-4686380160898466-121322-59ec321e1a8fe1b378d177e6d9419378-238335945",
+        accessToken: mp_at,
       });
 
       const preference = new Preference(client);
-
-      const { amount, description, external_reference, business_id } = req.body;
 
       const body = {
         items: [
@@ -44,7 +55,7 @@ export default async function handler(req, res) {
           exclude_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
         notification_url:
-          "https://3066-2806-2f0-2461-f100-1caa-4240-2191-d38e.ngrok-free.app/api/webhook",
+          "https://9c81-2806-2f0-2461-f100-4c0c-4d33-a2ed-e083.ngrok-free.app/api/webhook",
         business_id: business_id,
       };
 

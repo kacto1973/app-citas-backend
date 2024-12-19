@@ -13,6 +13,17 @@ export async function testWrite() {
   }
 }
 
+export async function getAccessToken(business_id) {
+  try {
+    const accessTokenRef = ref(database, `businesses/${business_id}/mp_at`);
+
+    const accessTokenSnap = await get(accessTokenRef);
+    if (accessTokenSnap.exists()) {
+      return accessTokenSnap.val();
+    }
+  } catch (error) {}
+}
+
 export async function updateAppointmentState(
   appointmentId,
   newState,
