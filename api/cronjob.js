@@ -143,7 +143,7 @@ export default async function handler(req, res) {
             const diffInHours = (now - createdAt) / (1000 * 60 * 60);
 
             // Eliminar citas no pagadas después de 24 horas
-            if (appointment.state === "no pagado" && diffInHours >= 24) {
+            if (appointment.state === "no pagado" && diffInHours >= 12) {
               updates[
                 `businesses/${businessID}/activeAppointments/${appointmentID}`
               ] = null;
