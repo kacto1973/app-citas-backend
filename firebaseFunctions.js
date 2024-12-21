@@ -13,9 +13,13 @@ export async function updateTrialExpirationDate(business_id) {
     const trialExpSnap = await get(trialExpRef);
 
     if (trialExpSnap.exists()) {
-      const trialExpDate = new Date(trialExpSnap.val().trialEnd);
+      // const trialExpDate = new Date(trialExpSnap.val().trialEnd);
+      // const newTrialExpDate = new Date(
+      //   trialExpDate.setMonth(trialExpDate.getMonth() + 1)
+      // ).toISOString();
+
       const newTrialExpDate = new Date(
-        trialExpDate.setMonth(trialExpDate.getMonth() + 1)
+        new Date().setMonth(new Date().getMonth() + 1)
       ).toISOString();
 
       await update(trialExpRef, { trialEnd: newTrialExpDate });

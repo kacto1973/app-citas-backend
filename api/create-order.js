@@ -55,7 +55,7 @@ export default async function handler(req, res) {
           exclude_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
         notification_url:
-          "https://9c81-2806-2f0-2461-f100-4c0c-4d33-a2ed-e083.ngrok-free.app/api/webhook",
+          "https://ab15-2806-2f0-2461-f100-f1cd-87ff-a4e4-b928.ngrok-free.app/api/webhook",
         business_id: business_id,
       };
 

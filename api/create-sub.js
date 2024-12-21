@@ -1,4 +1,4 @@
-import { MercadoPagoConfig } from "mercadopago";
+import { MercadoPagoConfig, Preference } from "mercadopago";
 //import { getAccessToken } from "../firebaseFunctions.js";
 
 export default async function handler(req, res) {
@@ -16,36 +16,43 @@ export default async function handler(req, res) {
     try {
       const { external_reference } = req.body;
 
-      const business_id = external_reference.business_id;
+      //const business_id = external_reference.business_id;
 
       const client = new MercadoPagoConfig({
         accessToken:
           "TEST-4686380160898466-121322-59ec321e1a8fe1b378d177e6d9419378-238335945", //configuramos mi access token
       });
 
-      // Crear el preapproval
+      const preference = new Preference(client);
+
       const body = {
-        back_url: "https://mb-salon-citas.netlify.app/",
-        reason: "Suscripción Mensual del Administrador de Citas", // Motivo del cobro recurrente
-        external_reference: business_id,
-        auto_recurring: {
-          frequency: 1, // Frecuencia (cada 1 mes)
-          frequency_type: "months", // Tipo de frecuencia (meses)
-          transaction_amount: 250, // Monto a cobrar
-          currency_id: "MXN", // Moneda
-          start_date: new Date().toISOString(), // Fecha de inicio
-          end_date: new Date(
-            new Date().setFullYear(new Date().getFullYear() + 1)
-          ).toISOString(), // Opcional: fecha de fin
+        items: [
+          {
+            title: "Licencia Mensual del Administrador de Agenda",
+            quantity: 1,
+            currency_id: "MXN",
+            unit_price: 299,
+          },
+        ],
+        external_reference: external_reference,
+        back_urls: {
+          success: "https://mb-salon-citas.netlify.app/",
+          failure: "https://mb-salon-citas.netlify.app/",
+          pending: "https://mb-salon-citas.netlify.app/",
+        },
+        auto_return: "approved",
+        payment_methods: {
+          installments: 1, // Solo una cuota, elimina la opción de cuotas
+          exclude_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
         notification_url:
-          "https://9c81-2806-2f0-2461-f100-4c0c-4d33-a2ed-e083.ngrok-free.app/api/webhook", // URL para recibir notificaciones
+          "https://ab15-2806-2f0-2461-f100-f1cd-87ff-a4e4-b928.ngrok-free.app/api/webhook", // URL para recibir notificaciones
       };
 
-      await client.preapproval.create({ body }).then((response) => {
+      await preference.create({ body }).then((response) => {
         console.log("sandbox init point: ", response.sandbox_init_point);
         res.status(200).json({
-          //init_point: response.init_point,
+          init_point: response.init_point,
           sandbox_init_point: response.sandbox_init_point,
         });
       });
