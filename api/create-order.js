@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         auto_return: "approved",
         payment_methods: {
           installments: 1, // Solo una cuota, elimina la opción de cuotas
-          exclude_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
+          //excluded_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
         notification_url:
           "https://ab15-2806-2f0-2461-f100-f1cd-87ff-a4e4-b928.ngrok-free.app/api/webhook",
