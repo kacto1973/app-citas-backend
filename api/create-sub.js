@@ -42,6 +42,10 @@ export default async function handler(req, res) {
         },
         auto_return: "approved",
         payment_methods: {
+          excluded_payment_types: [
+            { id: "ticket" }, // Excluir pagos en efectivo como OXXO
+            { id: "atm" }, // Excluir pagos en cajeros automáticos
+          ],
           installments: 1, // Solo una cuota, elimina la opción de cuotas
           //excluded_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
