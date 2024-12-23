@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
       const client = new MercadoPagoConfig({
         accessToken:
-          "TEST-4686380160898466-121322-59ec321e1a8fe1b378d177e6d9419378-238335945", //configuramos mi access token
+          "APP_USR-4686380160898466-121322-3fc7302b55b726d6b0b1295dc0f8db24-238335945", //configuramos mi access token
       });
 
       const preference = new Preference(client);
@@ -36,17 +36,16 @@ export default async function handler(req, res) {
         ],
         external_reference: external_reference,
         back_urls: {
-          success: "https://mb-salon-citas.netlify.app/",
-          failure: "https://mb-salon-citas.netlify.app/",
-          pending: "https://mb-salon-citas.netlify.app/",
+          success: "https://reservacitas.netlify.app/",
+          failure: "https://reservacitas.netlify.app/",
+          pending: "https://reservacitas.netlify.app/",
         },
         auto_return: "approved",
         payment_methods: {
           installments: 1, // Solo una cuota, elimina la opción de cuotas
           //excluded_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
-        notification_url:
-          "https://3da2-2806-2f0-2461-f100-cd8d-abcb-42d2-6e5e.ngrok-free.app/api/webhook", // URL para recibir notificaciones
+        notification_url: "https://app-citas-backend.vercel.app/api/webhook", // URL para recibir notificaciones
       };
 
       await preference.create({ body }).then((response) => {

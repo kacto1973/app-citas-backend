@@ -51,9 +51,9 @@ export default async function handler(req, res) {
         //expiration_date_to: expirationExactTime,
         external_reference: external_reference,
         back_urls: {
-          success: "https://mb-salon-citas.netlify.app/",
-          failure: "https://mb-salon-citas.netlify.app/",
-          pending: "https://mb-salon-citas.netlify.app/",
+          success: "https://reservacitas.netlify.app/",
+          failure: "https://reservacitas.netlify.app/",
+          pending: "https://reservacitas.netlify.app/",
         },
         auto_return: "approved",
         payment_methods: {
@@ -64,8 +64,7 @@ export default async function handler(req, res) {
           installments: 1, // Solo una cuota, elimina la opción de cuotas
           //excluded_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
-        notification_url:
-          "https://3da2-2806-2f0-2461-f100-cd8d-abcb-42d2-6e5e.ngrok-free.app/api/webhook",
+        notification_url: "https://app-citas-backend.vercel.app/api/webhook",
         business_id: business_id,
       };
 
