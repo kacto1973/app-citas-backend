@@ -17,11 +17,14 @@ export default async function handler(req, res) {
       const { amount, description, external_reference } = req.body;
 
       const business_id = external_reference.business_id;
+      const expirationExactTime = external_reference.expirationExactTime;
 
       console.log(
         "business_id que estamos pasando al getAccessToken: ",
         business_id
       );
+
+      console.log("expirationExactTime en ISO: ", expirationExactTime);
 
       const mp_at = await getAccessToken(business_id);
 
@@ -40,9 +43,12 @@ export default async function handler(req, res) {
             //description: description,
             quantity: 1,
             currency_id: "MXN",
-            unit_price: amount,
+            //unit_price: amount,
+            unit_price: 10,
           },
         ],
+        expires: true,
+        expiration_date_to: expirationExactTime,
         external_reference: external_reference,
         back_urls: {
           success: "https://mb-salon-citas.netlify.app/",
@@ -51,11 +57,15 @@ export default async function handler(req, res) {
         },
         auto_return: "approved",
         payment_methods: {
+          excluded_payment_types: [
+            { id: "ticket" }, // Excluir pagos en efectivo como OXXO
+            { id: "atm" }, // Excluir pagos en cajeros automáticos
+          ],
           installments: 1, // Solo una cuota, elimina la opción de cuotas
           //excluded_payment_types: [{ id: "credit_card" }], // Excluir tarjetas de crédito para evitar cuotas
         },
         notification_url:
-          "https://ab15-2806-2f0-2461-f100-f1cd-87ff-a4e4-b928.ngrok-free.app/api/webhook",
+          "https://3da2-2806-2f0-2461-f100-cd8d-abcb-42d2-6e5e.ngrok-free.app/api/webhook",
         business_id: business_id,
       };
 
@@ -65,7 +75,8 @@ export default async function handler(req, res) {
       );
 
       await preference.create({ body }).then((response) => {
-        console.log("sandbox init point: ", response.sandbox_init_point);
+        //console.log("sandbox init point: ", response.sandbox_init_point);
+        console.log("init point: ", response.init_point);
         res.status(200).json({
           init_point: response.init_point,
           sandbox_init_point: response.sandbox_init_point,

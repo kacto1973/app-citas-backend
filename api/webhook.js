@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer TEST-4686380160898466-121322-59ec321e1a8fe1b378d177e6d9419378-238335945`,
+            Authorization: `Bearer APP_USR-4686380160898466-121322-3fc7302b55b726d6b0b1295dc0f8db24-238335945`,
           },
         }
       );
@@ -72,9 +72,12 @@ export default async function handler(req, res) {
             // );
           }
         } else if (paymentData.status === "pending") {
-          console.log("Pago pendiente: ", paymentData);
+          console.log("Pago pendiente que estas probando orita: ", paymentData);
         } else {
-          console.log("Pago rechazado o en otro estado: ", paymentData);
+          console.log(
+            "Pago rechazado o en otro estado probando orita: ",
+            paymentData
+          );
         }
 
         ////////////////
