@@ -110,6 +110,7 @@ export default async function handler(req, res) {
   const sevenDaysAgo = new Date(now);
   sevenDaysAgo.setDate(now.getDate() - 7);
   const sevenDaysAgoFormatted = sevenDaysAgo.toISOString().split("T")[0];
+  const todayFormatted = now.toISOString().split("T")[0];
 
   console.log("Cron job iniciado...");
 
@@ -142,8 +143,20 @@ export default async function handler(req, res) {
             const createdAt = new Date(appointment.createdAt);
             const diffInHours = (now - createdAt) / (1000 * 60 * 60);
 
-            // Eliminar citas no pagadas después de 24 horas
+            console.log("procesando cita", appointmentID);
+            console.log("creada en", createdAt);
+            console.log("diferencia en horas", diffInHours);
+
+            // Eliminar citas no pagadas después de 12 horas
             if (appointment.state === "no pagado" && diffInHours >= 12) {
+              if (appointment.selectedDate === todayFormatted) {
+                console.log(
+                  "si funciono ya que me detecta quetodayFormatted",
+                  todayFormatted
+                );
+                continue;
+              }
+              console.log("todaaaaaay", todayFormatted);
               updates[
                 `businesses/${businessID}/activeAppointments/${appointmentID}`
               ] = null;
