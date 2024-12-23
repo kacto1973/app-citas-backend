@@ -49,10 +49,10 @@ export default async function handler(req, res) {
       };
 
       await preference.create({ body }).then((response) => {
-        console.log("sandbox init point: ", response.sandbox_init_point);
+        //console.log("sandbox init point: ", response.sandbox_init_point);
         res.status(200).json({
           init_point: response.init_point,
-          sandbox_init_point: response.sandbox_init_point,
+          //sandbox_init_point: response.sandbox_init_point,
         });
       });
 
