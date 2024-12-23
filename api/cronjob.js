@@ -1,116 +1,17 @@
-// import { ref, get, remove } from "firebase/database";
-// import database from "../firebaseConfig.js";
-
-// /*
-// Cron job para limpiar:
-// 1. Citas no pagadas en 24 horas.
-// 2. Citas con más de 7 días de antigüedad.
-// 3. Días de descanso (restdays) que ya hayan pasado.
-// */
-
-// export default async function handler(req, res) {
-//   const now = new Date();
-
-//   // Calculamos la fecha de 7 días atrás
-//   const sevenDaysAgo = new Date();
-//   sevenDaysAgo.setDate(now.getDate() - 7);
-//   const sevenDaysAgoFormatted = sevenDaysAgo.toISOString().split("T")[0];
-
-//   try {
-//     const businessesRef = ref(database, "businesses");
-//     const businessesSnap = await get(businessesRef);
-
-//     if (businessesSnap.exists()) {
-//       const businesses = Object.entries(businessesSnap.val());
-
-//       // Iterar sobre cada negocio
-//       for (const [businessID, business] of businesses) {
-//         console.log(`Procesando negocio: ${businessID}`);
-
-//         // Limpieza de citas activas
-//         const appointmentsRef = ref(
-//           database,
-//           `businesses/${businessID}/activeAppointments`
-//         );
-//         const appointmentsSnap = await get(appointmentsRef);
-
-//         if (appointmentsSnap.exists()) {
-//           const appointments = Object.entries(appointmentsSnap.val());
-
-//           for (const [appointmentID, appointment] of appointments) {
-//             const createdAt = new Date(appointment.createdAt);
-//             const diffInHours = (now - createdAt) / (1000 * 60 * 60);
-
-//             // Eliminar citas no pagadas después de 24 horas
-//             if (appointment.state === "no pagado" && diffInHours >= 24) {
-//               await remove(
-//                 ref(
-//                   database,
-//                   `businesses/${businessID}/activeAppointments/${appointmentID}`
-//                 )
-//               );
-//               console.log(
-//                 `Cita ${appointmentID} eliminada en negocio ${businessID} por falta de anticipo.`
-//               );
-//               continue;
-//             }
-
-//             // Eliminar citas con más de 7 días de antigüedad
-//             if (appointment.selectedDate < sevenDaysAgoFormatted) {
-//               await remove(
-//                 ref(
-//                   database,
-//                   `businesses/${businessID}/activeAppointments/${appointmentID}`
-//                 )
-//               );
-//               console.log(
-//                 `Cita ${appointmentID} eliminada en negocio ${businessID} por antigüedad.`
-//               );
-//             }
-//           }
-//         }
-
-//         // Limpieza de días de descanso (restdays)
-//         const restdaysRef = ref(database, `businesses/${businessID}/restdays`);
-//         const restdaysSnap = await get(restdaysRef);
-
-//         if (restdaysSnap.exists()) {
-//           const restdays = Object.entries(restdaysSnap.val());
-//           const todayFormatted = now.toISOString().split("T")[0];
-
-//           for (const [restdayID, restday] of restdays) {
-//             if (restday < todayFormatted) {
-//               await remove(
-//                 ref(database, `businesses/${businessID}/restdays/${restdayID}`)
-//               );
-//               console.log(
-//                 `Día de descanso ${restdayID} eliminado en negocio ${businessID} por antigüedad.`
-//               );
-//             }
-//           }
-//         }
-//       }
-//     }
-
-//     console.log("Limpieza completada para todos los negocios.");
-//     return res.status(200).json({
-//       message: "Limpieza de citas y días de descanso ejecutada correctamente.",
-//     });
-//   } catch (error) {
-//     console.error("Error en limpieza:", error);
-//     return res.status(500).json({ error: "Error en limpieza." });
-//   }
-// }
-
 import { ref, get, remove, update } from "firebase/database";
 import database from "../firebaseConfig.js";
+import { DateTime } from "luxon";
 
 export default async function handler(req, res) {
   const now = new Date();
   const sevenDaysAgo = new Date(now);
   sevenDaysAgo.setDate(now.getDate() - 7);
   const sevenDaysAgoFormatted = sevenDaysAgo.toISOString().split("T")[0];
-  const todayFormatted = now.toISOString().split("T")[0];
+  //const todayFormatted = now.toISOString().split("T")[0];
+
+  //logica aparte usando luxon
+  const localTime = DateTime.now().setZone("America/Hermosillo");
+  const localTimeFormatted = localTime.toFormat("yyyy-MM-dd");
 
   console.log("Cron job iniciado...");
 
@@ -140,32 +41,6 @@ export default async function handler(req, res) {
           const appointments = Object.entries(appointmentsSnap.val());
 
           for (const [appointmentID, appointment] of appointments) {
-            const createdAt = new Date(appointment.createdAt);
-            const diffInHours = (now - createdAt) / (1000 * 60 * 60);
-
-            console.log("procesando cita", appointmentID);
-            console.log("creada en", createdAt);
-            console.log("diferencia en horas", diffInHours);
-
-            // Eliminar citas no pagadas después de 12 horas
-            if (appointment.state === "no pagado" && diffInHours >= 12) {
-              if (appointment.selectedDate === todayFormatted) {
-                console.log(
-                  "si funciono ya que me detecta quetodayFormatted",
-                  todayFormatted
-                );
-                continue;
-              }
-              console.log("todaaaaaay", todayFormatted);
-              updates[
-                `businesses/${businessID}/activeAppointments/${appointmentID}`
-              ] = null;
-              console.log(
-                `Cita ${appointmentID} eliminada en negocio ${businessID} por falta de anticipo.`
-              );
-              continue;
-            }
-
             // Eliminar citas con más de 7 días de antigüedad
             if (appointment.selectedDate < sevenDaysAgoFormatted) {
               updates[
@@ -175,6 +50,53 @@ export default async function handler(req, res) {
                 `Cita ${appointmentID} eliminada en negocio ${businessID} por antigüedad.`
               );
             }
+
+            const creationDate = DateTime.fromISO(appointment.createdAt)
+              .setZone("America/Hermosillo") // Asegura que use la zona horaria de Hermosillo
+              .toFormat("yyyy-MM-dd");
+
+            const theDayAfter = DateTime.fromISO(appointment.createdAt)
+              .setZone("America/Hermosillo") // Asegura que use la misma zona horaria
+              .plus({ days: 1 }) // Añade un día
+              .toFormat("yyyy-MM-dd");
+
+            if (
+              appointment.selectedDate === creationDate ||
+              appointment.selectedDate === theDayAfter
+            ) {
+              console.log(
+                "cita creada y seleccionada para el mismo dia o el dia siguiente, no se elimina"
+              );
+              continue;
+            }
+
+            console.log(
+              "la cita se creo en un dia distinto al seleccionado (no es intradia)"
+            );
+
+            const createdAt = new Date(appointment.createdAt);
+            const diffInHours = (now - createdAt) / (1000 * 60 * 60);
+
+            console.log("procesando cita", appointmentID);
+            console.log("creada en", createdAt);
+            console.log("diferencia en horas", diffInHours);
+
+            // Eliminar citas no pagadas después de 12 horas
+            if (appointment.state === "no pagado" && diffInHours >= 12) {
+              console.log(
+                "es una cita no pagada y tiene más de 12 horas, se elimina"
+              );
+
+              updates[
+                `businesses/${businessID}/activeAppointments/${appointmentID}`
+              ] = null;
+              console.log(
+                `Cita ${appointmentID} eliminada en negocio ${businessID} por falta de anticipo.`
+              );
+              continue;
+            }
+
+            console.log("No se ha pagado, pero no han pasado las 12 horas");
           }
         }
 

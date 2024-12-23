@@ -12,6 +12,7 @@
     "dotenv": "^16.4.7",
     "firebase": "^11.1.0",
     "firebase-admin": "^13.0.1",
+    "luxon": "^3.5.0",
     "mercadopago": "^2.1.0",
     "morgan": "^1.10.0",
     "twilio": "^5.4.0"
