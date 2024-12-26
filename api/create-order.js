@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     try {
       const { amount, description, external_reference } = req.body;
 
-      const business_id = external_reference.business_id;
+      const business_id = external_reference.business_id.toLowerCase();
       const expirationExactTime = external_reference.expirationExactTime;
 
       console.log(

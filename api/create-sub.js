@@ -20,7 +20,8 @@ export default async function handler(req, res) {
 
       const client = new MercadoPagoConfig({
         accessToken:
-          "APP_USR-4686380160898466-121322-3fc7302b55b726d6b0b1295dc0f8db24-238335945", //configuramos mi access token
+          "APP_USR-4686380160898466-121322-3fc7302b55b726d6b0b1295dc0f8db24-238335945",
+        //configuramos mi access token
       });
 
       const preference = new Preference(client);
