@@ -4,7 +4,7 @@ import {
   testWrite,
   updateTrialExpirationDate,
 } from "../firebaseFunctions.js";
-import { sendPaymentReceipt } from "../twilioFunctions.js";
+import { sendMessage } from "../twilioFunctions.js";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -62,7 +62,7 @@ export default async function handler(req, res) {
             //   paymentData.external_reference, paymentData.business_id
             // );
 
-            // await sendPaymentReceipt(
+            // await sendMessage(
             //   "6624237920",
             //   "Se ha recibido un nuevo anticipo:\n" +
             //     `• Monto de: $${paidAmount}\n` +

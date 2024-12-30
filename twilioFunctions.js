@@ -5,7 +5,7 @@ const authToken = "9c0d19feb52f7545cf81edee35dff7d8";
 
 const client = twilio(accountSid, authToken);
 
-export const sendPaymentReceipt = async (phoneNumber, message) => {
+export const sendMessage = async (phoneNumber, message) => {
   try {
     const messageSent = await client.messages.create({
       body: message,
