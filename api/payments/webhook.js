@@ -3,8 +3,8 @@ import {
   findAppointmentById,
   testWrite,
   updateTrialExpirationDate,
-} from "../firebaseFunctions.js";
-import { sendMessage } from "../twilioFunctions.js";
+} from "../../firebaseFunctions.js";
+import { sendMessage } from "../../twilioFunctions.js";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer APP_USR-4686380160898466-121322-3fc7302b55b726d6b0b1295dc0f8db24-238335945`,
+           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
           },
         }
       );

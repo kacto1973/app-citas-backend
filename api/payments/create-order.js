@@ -1,5 +1,4 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import { getAccessToken } from "../firebaseFunctions.js";
 
 export default async function handler(req, res) {
   // Permitir solicitudes desde cualquier origen (puedes restringirlo a tu dominio)
@@ -19,19 +18,13 @@ export default async function handler(req, res) {
       const business_id = external_reference.business_id.toLowerCase();
       const expirationExactTime = external_reference.expirationExactTime;
 
-      console.log(
-        "business_id que estamos pasando al getAccessToken: ",
-        business_id
-      );
+      
 
       console.log("expirationExactTime en ISO: ", expirationExactTime);
 
-      const mp_at = await getAccessToken(business_id);
-
-      console.log("mp_at que se obtiene del getAccessToken: ", mp_at);
-
+      
       const client = new MercadoPagoConfig({
-        accessToken: mp_at,
+        accessToken: process.env.MP_ACCESS_TOKEN,
       });
 
       const preference = new Preference(client);

@@ -1,5 +1,5 @@
 import { ref, get, remove, update } from "firebase/database";
-import database from "../firebaseConfig.js";
+import database from "../../firebaseConfig.js";
 import { DateTime } from "luxon";
 
 export default async function handler(req, res) {

@@ -1,5 +1,4 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
-//import { getAccessToken } from "../firebaseFunctions.js";
 
 export default async function handler(req, res) {
   // Permitir solicitudes desde cualquier origen (puedes restringirlo a tu dominio)
@@ -19,9 +18,7 @@ export default async function handler(req, res) {
       //const business_id = external_reference.business_id;
 
       const client = new MercadoPagoConfig({
-        accessToken:
-          "APP_USR-4686380160898466-121322-3fc7302b55b726d6b0b1295dc0f8db24-238335945",
-        //configuramos mi access token
+        accessToken: process.env.MP_ACCESS_TOKEN,
       });
 
       const preference = new Preference(client);

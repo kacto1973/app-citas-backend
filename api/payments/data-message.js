@@ -1,4 +1,4 @@
-import { sendMessage } from "../twilioFunctions.js";
+import { sendMessage } from "../../twilioFunctions.js";
 
 export default async function handler(req, res) {
   // Permitir solicitudes desde cualquier origen (puedes restringirlo a tu dominio)
