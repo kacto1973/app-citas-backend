@@ -13,6 +13,7 @@ yarn-error.log*
 # Firebase
 firebase-*.json
 service-account*.json
+.
 
 # Vercel
 .vercel/
