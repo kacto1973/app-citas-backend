@@ -1,6 +1,5 @@
 // firebaseFunctions.js
-//import admin from "./firebaseConfig.js"; // Importa la configuración ya inicializada
-import database from "./firebaseConfig.js"; // Importa la configuración ya inicializada
+import { db as database } from "./lib/firebase-admin.js";
 import { ref, update, get, set } from "firebase/database";
 
 export async function updateTrialExpirationDate(business_id) {
@@ -37,18 +36,6 @@ export async function updateTrialExpirationDate(business_id) {
     );
   }
 }
-
-export async function testWrite() {
-  const testRef = ref(database, "testNode");
-  try {
-    await set(testRef, { testKey: "testValue" });
-    console.log("Escritura exitosa en testNode");
-  } catch (error) {
-    console.error("Error escribiendo en testNode:", error);
-  }
-}
-
-
 
 export async function updateAppointmentState(
   appointmentId,
@@ -111,30 +98,3 @@ export async function updateAppointmentState(
     return false;
   }
 }
-
-export const findAppointmentById = async (appointmentId, business_id) => {
-  try {
-    const path = `businesses/${business_id}`;
-
-    const appointmentsRef = ref(database, `${path}/activeAppointments`);
-
-    const appointmentsSnap = await get(appointmentsRef);
-
-    if (appointmentsSnap.exists()) {
-      const appointmentsArray = Object.values(appointmentsSnap.val());
-      const foundAppointment = appointmentsArray.find(
-        (appointment) => appointment.id === appointmentId
-      );
-
-      if (foundAppointment) {
-        return foundAppointment; // Retorna el objeto completo.
-      }
-    }
-
-    console.log("No se encontró una cita con ese ID: " + appointmentId);
-    return false;
-  } catch (error) {
-    console.error("Error al fetchear appointment por ID: " + error.message);
-    return false;
-  }
-};

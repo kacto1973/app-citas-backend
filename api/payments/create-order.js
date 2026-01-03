@@ -1,10 +1,8 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import cors from "../_middlewares/cors.js";
 
 export default async function handler(req, res) {
-  // Permitir solicitudes desde cualquier origen (puedes restringirlo a tu dominio)
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  await cors(req, res);
 
   if (req.method === "OPTIONS") {
     // Responde a las preflight requests de CORS
@@ -18,11 +16,8 @@ export default async function handler(req, res) {
       const business_id = external_reference.business_id.toLowerCase();
       const expirationExactTime = external_reference.expirationExactTime;
 
-      
-
       console.log("expirationExactTime en ISO: ", expirationExactTime);
 
-      
       const client = new MercadoPagoConfig({
         accessToken: process.env.MP_ACCESS_TOKEN,
       });

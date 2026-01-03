@@ -1,10 +1,8 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import cors from "../_middlewares/cors.js";
 
 export default async function handler(req, res) {
-  // Permitir solicitudes desde cualquier origen (puedes restringirlo a tu dominio)
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  await cors(req, res);
 
   if (req.method === "OPTIONS") {
     // Responde a las preflight requests de CORS

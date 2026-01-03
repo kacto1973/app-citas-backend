@@ -1,9 +1,7 @@
 import {
   updateAppointmentState,
-  findAppointmentById,
-  testWrite,
   updateTrialExpirationDate,
-} from "../../firebaseFunctions.js";
+} from "../../webhookFunctions.js";
 import { sendMessage } from "../../twilioFunctions.js";
 
 export default async function handler(req, res) {
@@ -20,7 +18,7 @@ export default async function handler(req, res) {
         {
           method: "GET",
           headers: {
-           Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+            Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
           },
         }
       );

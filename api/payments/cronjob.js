@@ -1,8 +1,11 @@
 import { ref, get, remove, update } from "firebase/database";
-import database from "../../firebaseConfig.js";
+import { db as database } from "../../lib/firebase-admin.js";
 import { DateTime } from "luxon";
+import cors from "../_middlewares/cors.js";
 
 export default async function handler(req, res) {
+  await cors(req, res);
+
   const now = new Date();
   const sevenDaysAgo = new Date(now);
   sevenDaysAgo.setDate(now.getDate() - 7);
