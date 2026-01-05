@@ -18,3 +18,4 @@ service-account*.json
 # Vercel
 .vercel/
 .vercel
+.env*.local

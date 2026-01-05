@@ -1,23 +1,25 @@
-import { db } from '../../lib/firebase-admin.js';
-import cors from '../_middlewares/cors.js';
+import { db } from "../../lib/firebase-admin.js";
+import cors from "../_middlewares/cors.js";
 
 async function handler(req, res) {
-  const path = 'businesses/mb_salon/restdays';
-  
+  await cors(req, res);
+
+  const path = "businesses/mb_salon/restdays";
+
   // GET - Obtener todos los días no laborales
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     try {
-      const snapshot = await db.ref(path).once('value');
-      
+      const snapshot = await db.ref(path).once("value");
+
       if (snapshot.exists()) {
         const restDays = snapshot.val();
         const restDaysArray = Object.values(restDays);
-        
+
         return res.status(200).json({
           success: true,
           data: restDays,
           array: restDaysArray,
-          count: restDaysArray.length
+          count: restDaysArray.length,
         });
       } else {
         return res.status(200).json({
@@ -25,51 +27,51 @@ async function handler(req, res) {
           data: {},
           array: [],
           count: 0,
-          message: 'No hay días no laborales configurados'
+          message: "No hay días no laborales configurados",
         });
       }
     } catch (error) {
-      console.error('Error en getAllRestDays:', error);
+      console.error("Error en getAllRestDays:", error);
       return res.status(500).json({
         success: false,
-        error: 'Error interno del servidor'
+        error: "Error interno del servidor",
       });
     }
   }
-  
+
   // POST - Agregar días no laborales
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     try {
       const { action, days } = req.body;
-      
+
       if (!days || !Array.isArray(days) || days.length === 0) {
         return res.status(400).json({
           success: false,
-          error: 'Se requiere un array de días válido'
+          error: "Se requiere un array de días válido",
         });
       }
-      
-      if (action === 'add') {
+
+      if (action === "add") {
         // Agregar días
         for (const day of days) {
           await db.ref(path).push().set(day);
         }
-        
+
         return res.status(200).json({
           success: true,
-          message: 'Días no laborales agregados exitosamente',
-          daysAdded: days.length
+          message: "Días no laborales agregados exitosamente",
+          daysAdded: days.length,
         });
       }
-      
-      if (action === 'remove') {
+
+      if (action === "remove") {
         // Eliminar días
-        const snapshot = await db.ref(path).once('value');
-        
+        const snapshot = await db.ref(path).once("value");
+
         if (snapshot.exists()) {
           const restDays = snapshot.val();
           let removedCount = 0;
-          
+
           for (const key in restDays) {
             if (restDays.hasOwnProperty(key)) {
               const day = restDays[key];
@@ -79,38 +81,37 @@ async function handler(req, res) {
               }
             }
           }
-          
+
           return res.status(200).json({
             success: true,
-            message: 'Días no laborales eliminados exitosamente',
-            daysRemoved: removedCount
+            message: "Días no laborales eliminados exitosamente",
+            daysRemoved: removedCount,
           });
         } else {
           return res.status(200).json({
             success: true,
-            message: 'No hay días no laborales para eliminar'
+            message: "No hay días no laborales para eliminar",
           });
         }
       }
-      
+
       return res.status(400).json({
         success: false,
-        error: 'Acción no válida. Use "add" o "remove"'
+        error: 'Acción no válida. Use "add" o "remove"',
       });
-      
     } catch (error) {
-      console.error('Error en add/removeRestDays:', error);
+      console.error("Error en add/removeRestDays:", error);
       return res.status(500).json({
         success: false,
-        error: 'Error interno del servidor'
+        error: "Error interno del servidor",
       });
     }
   }
-  
+
   return res.status(405).json({
     success: false,
-    error: 'Método no permitido'
+    error: "Método no permitido",
   });
 }
 
-export default cors(handler);
+export default handler;

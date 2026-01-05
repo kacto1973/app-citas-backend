@@ -10,6 +10,8 @@ const cors = Cors({
 
 // Helper para que funcione en serverless
 export default function runCors(req, res) {
+  console.log("🟢 CORS ejecutado");
+
   return new Promise((resolve, reject) => {
     cors(req, res, (err) => {
       if (err) reject(err);

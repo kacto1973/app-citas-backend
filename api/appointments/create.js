@@ -2,6 +2,8 @@ import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
 
 async function handler(req, res) {
+  await cors(req, res);
+
   // POST - Crear nueva cita
   if (req.method === "POST") {
     try {
@@ -82,4 +84,4 @@ async function handler(req, res) {
   });
 }
 
-export default cors(handler);
+export default handler;

@@ -2,6 +2,8 @@ import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
 
 async function handler(req, res) {
+  await cors(req, res);
+
   const { id } = req.query; // Vercel pasa parámetros dinámicos en req.query
   const path = `businesses/mb_salon/activeAppointments`;
 
@@ -102,4 +104,4 @@ async function handler(req, res) {
   });
 }
 
-export default cors(handler);
+export default handler;
