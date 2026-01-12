@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -13,15 +14,9 @@ async function handler(req, res) {
       const snapshot = await db.ref(`${path}/${id}`).once("value");
 
       if (snapshot.exists()) {
-        return res.status(200).json({
-          success: true,
-          data: {
-            id,
-            ...snapshot.val(),
-          },
-        });
+        return success(res, { ...snapshot.val() }, 200);
       } else {
-        // Buscar en todas las citas (por si el ID está en el objeto)
+        /*// Buscar en todas las citas (por si el ID está en el objeto)
         const allSnap = await db.ref(path).once("value");
         if (allSnap.exists()) {
           const appointments = allSnap.val();
@@ -38,19 +33,13 @@ async function handler(req, res) {
               },
             });
           }
-        }
+        } */
 
-        return res.status(404).json({
-          success: false,
-          error: "Cita no encontrada",
-        });
+        return fail(res, "Cita no encontrada", 404);
       }
     } catch (error) {
       console.error("Error en findAppointmentById:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
@@ -59,16 +48,10 @@ async function handler(req, res) {
     try {
       await db.ref(`${path}/${id}`).remove();
 
-      return res.status(200).json({
-        success: true,
-        message: "Cita eliminada exitosamente",
-      });
+      return success(res, null, 200);
     } catch (error) {
       console.error("Error en cancelAppointment:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
@@ -79,29 +62,17 @@ async function handler(req, res) {
 
       if (snapshot.exists()) {
         const appointment = snapshot.val();
-        return res.status(200).json({
-          success: true,
-          expiresAt: appointment.expiresAt,
-        });
+        return success(res, { expiresAt: appointment.expiresAt }, 200);
       } else {
-        return res.status(404).json({
-          success: false,
-          error: "Cita no encontrada",
-        });
+        return fail(res, "Cita no encontrada", 404);
       }
     } catch (error) {
       console.error("Error en getAppointmentExpirationTime:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

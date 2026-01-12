@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -19,35 +20,17 @@ async function handler(req, res) {
             ...apt,
           })
         );
-
-        return res.status(200).json({
-          success: true,
-          data: appointments,
-          array: appointmentsArray,
-          count: appointmentsArray.length,
-        });
+        return success(res, { appointments: appointmentsArray }, 200);
       } else {
-        return res.status(200).json({
-          success: true,
-          data: {},
-          array: [],
-          count: 0,
-          message: "No hay citas activas",
-        });
+        return success(res, null);
       }
     } catch (error) {
       console.error("Error en getAppointments:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error al obtener las citas", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

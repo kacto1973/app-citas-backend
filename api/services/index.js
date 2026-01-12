@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -12,32 +13,18 @@ async function handler(req, res) {
       const snapshot = await db.ref(path).once("value");
 
       if (snapshot.exists()) {
-        return res.status(200).json({
-          success: true,
-          data: snapshot.val(),
-          count: Object.keys(snapshot.val()).length,
-        });
+        return success(res, snapshot.val());
       } else {
-        return res.status(200).json({
-          success: true,
-          data: {},
-          count: 0,
-          message: "No hay servicios disponibles",
-        });
+        return success(res, null);
       }
     } catch (error) {
       console.error("Error en getServices:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+
+      return fail(res, "Error al obtener los servicios");
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

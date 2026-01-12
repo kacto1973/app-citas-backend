@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -11,17 +12,11 @@ async function handler(req, res) {
 
       // Validaciones
       if (!fullName?.trim()) {
-        return res.status(400).json({
-          success: false,
-          error: "Nombre completo requerido",
-        });
+        return fail(res, "Nombre completo requerido", 400);
       }
 
       if (!cellphone?.trim()) {
-        return res.status(400).json({
-          success: false,
-          error: "Número de teléfono requerido",
-        });
+        return fail(res, "Número de teléfono requerido", 400);
       }
 
       const path = "businesses/mb_salon/clients";
@@ -34,10 +29,11 @@ async function handler(req, res) {
         .once("value");
 
       if (existingSnapshot.exists()) {
-        return res.status(409).json({
-          success: false,
-          error: "Ya existe un cliente con este número de teléfono",
-        });
+        return fail(
+          res,
+          "Ya existe un cliente con este número de teléfono",
+          409
+        );
       }
 
       // Crear objeto del cliente
@@ -56,27 +52,15 @@ async function handler(req, res) {
       const newClientRef = db.ref(path).push();
       await newClientRef.set(clientObject);
 
-      return res.status(201).json({
-        success: true,
-        message: "Cliente registrado exitosamente",
-        client: {
-          id: newClientRef.key,
-          ...clientObject,
-        },
-      });
+      return success(res, { id: newClientRef.key, ...clientObject }, 201);
     } catch (error) {
       console.error("Error en registerClient:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

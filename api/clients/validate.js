@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -10,10 +11,7 @@ async function handler(req, res) {
       const { cellphone } = req.body;
 
       if (!cellphone) {
-        return res.status(400).json({
-          success: false,
-          error: "Número de teléfono requerido",
-        });
+        return fail(res, "Número de teléfono requerido", 400);
       }
 
       const path = "businesses/mb_salon/clients";
@@ -28,34 +26,18 @@ async function handler(req, res) {
         const clientId = Object.keys(clients)[0];
         const clientData = clients[clientId];
 
-        return res.status(200).json({
-          success: true,
-          clientExists: true,
-          client: {
-            id: clientId,
-            ...clientData,
-          },
-        });
+        return success(res, { id: clientId, ...clientData }, 200);
       } else {
-        return res.status(200).json({
-          success: true,
-          clientExists: false,
-          message: "Cliente no encontrado",
-        });
+        return success(res, null, 200);
       }
     } catch (error) {
       console.error("Error en validateClient:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

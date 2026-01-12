@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -15,27 +16,13 @@ async function handler(req, res) {
         const restDays = snapshot.val();
         const restDaysArray = Object.values(restDays);
 
-        return res.status(200).json({
-          success: true,
-          data: restDays,
-          array: restDaysArray,
-          count: restDaysArray.length,
-        });
+        return success(res, { restDays: restDaysArray }, 200);
       } else {
-        return res.status(200).json({
-          success: true,
-          data: {},
-          array: [],
-          count: 0,
-          message: "No hay días no laborales configurados",
-        });
+        return success(res, null);
       }
     } catch (error) {
       console.error("Error en getAllRestDays:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
@@ -45,10 +32,7 @@ async function handler(req, res) {
       const { action, days } = req.body;
 
       if (!days || !Array.isArray(days) || days.length === 0) {
-        return res.status(400).json({
-          success: false,
-          error: "Se requiere un array de días válido",
-        });
+        return fail(res, "Se requiere un array de días válido", 400);
       }
 
       if (action === "add") {
@@ -57,11 +41,7 @@ async function handler(req, res) {
           await db.ref(path).push().set(day);
         }
 
-        return res.status(200).json({
-          success: true,
-          message: "Días no laborales agregados exitosamente",
-          daysAdded: days.length,
-        });
+        return success(res, null);
       }
 
       if (action === "remove") {
@@ -82,36 +62,20 @@ async function handler(req, res) {
             }
           }
 
-          return res.status(200).json({
-            success: true,
-            message: "Días no laborales eliminados exitosamente",
-            daysRemoved: removedCount,
-          });
+          return success(res, null);
         } else {
-          return res.status(200).json({
-            success: true,
-            message: "No hay días no laborales para eliminar",
-          });
+          return success(res, null);
         }
       }
 
-      return res.status(400).json({
-        success: false,
-        error: 'Acción no válida. Use "add" o "remove"',
-      });
+      return fail(res, "Acción no válida. Use 'add' o 'remove'", 400);
     } catch (error) {
       console.error("Error en add/removeRestDays:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

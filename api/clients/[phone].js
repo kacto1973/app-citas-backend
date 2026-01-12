@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -21,32 +22,17 @@ async function handler(req, res) {
         const clientId = Object.keys(clients)[0];
         const clientData = clients[clientId];
 
-        return res.status(200).json({
-          success: true,
-          client: {
-            id: clientId,
-            ...clientData,
-          },
-        });
+        return success(res, { id: clientId, ...clientData });
       } else {
-        return res.status(404).json({
-          success: false,
-          error: "Cliente no encontrado",
-        });
+        return fail(res, "Cliente no encontrado", 404);
       }
     } catch (error) {
       console.error("Error en findClientByPhoneNumber:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error interno del servidor", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -10,10 +11,7 @@ async function handler(req, res) {
       const { password } = req.body;
 
       if (!password) {
-        return res.status(400).json({
-          success: false,
-          error: "Contraseña requerida",
-        });
+        return fail(res, "Falta la contraseña", 400);
       }
 
       const path = "businesses/mb_salon/admins";
@@ -33,44 +31,20 @@ async function handler(req, res) {
         });
 
         if (foundAdmin) {
-          // Generar token simple (en producción usar JWT)
-          const token =
-            Math.random().toString(36).substring(2) + Date.now().toString(36);
-
-          return res.status(200).json({
-            success: true,
-            message: "Login exitoso",
-            token,
-            user: {
-              username: adminUsername,
-              role: "admin",
-            },
-          });
+          return success(res, null, 200);
         } else {
-          return res.status(401).json({
-            success: false,
-            error: "Credenciales incorrectas",
-          });
+          return fail(res, "Contraseña incorrecta", 401);
         }
       } else {
-        return res.status(404).json({
-          success: false,
-          error: "No hay administradores configurados",
-        });
+        return fail(res, "No hay administradores registrados", 404);
       }
     } catch (error) {
       console.error("Error en validateAdmin:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error del servidor", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

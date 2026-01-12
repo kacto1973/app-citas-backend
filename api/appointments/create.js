@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -26,17 +27,11 @@ async function handler(req, res) {
         !Array.isArray(servicesCart) ||
         servicesCart.length === 0
       ) {
-        return res.status(400).json({
-          success: false,
-          error: "El carrito de servicios no puede estar vacío",
-        });
+        return fail(res, "El carrito de servicios no puede estar vacío", 400);
       }
 
       if (!cellphone) {
-        return res.status(400).json({
-          success: false,
-          error: "Número de teléfono requerido",
-        });
+        return fail(res, "Número de teléfono requerido", 400);
       }
 
       // Crear referencia y objeto de cita
@@ -63,25 +58,14 @@ async function handler(req, res) {
       // Guardar en Firebase
       await newAppointmentRef.set(appointmentObject);
 
-      return res.status(201).json({
-        success: true,
-        message: "Cita creada exitosamente",
-        appointmentId: newAppointmentRef.key,
-        data: appointmentObject,
-      });
+      return success(res, null, 201);
     } catch (error) {
       console.error("Error en addAppointment:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+      return fail(res, "Error al crear la cita", 500);
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;

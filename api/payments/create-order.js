@@ -1,5 +1,6 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 export default async function handler(req, res) {
   await cors(req, res);
@@ -61,23 +62,19 @@ export default async function handler(req, res) {
         business_id
       );
 
-      await preference.create({ body }).then((response) => {
-        //console.log("sandbox init point: ", response.sandbox_init_point);
-        console.log("init point: ", response.init_point);
-        res.status(200).json({
-          init_point: response.init_point,
-          sandbox_init_point: response.sandbox_init_point,
-        });
+      const response = await preference.create({ body });
+
+      return success(res, {
+        init_point: response.init_point,
+        sandbox_init_point: response.sandbox_init_point,
       });
 
       //regresar el init point
     } catch (error) {
       console.error("Error creando la preferencia: ", error);
-      res.status(500).json({ error: "Error al crear la preferencia de pago" });
+      return fail(res, "Error al crear la preferencia de pago");
     }
   } else {
-    res
-      .status(405)
-      .json({ error: "Método no permitido, esa no es una solicitud POST" });
+    return fail(res, "Método no permitido, esa no es una solicitud POST");
   }
 } //FIN FUNCION HANDLER

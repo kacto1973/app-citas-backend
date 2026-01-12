@@ -1,5 +1,6 @@
 import { db } from "../../lib/firebase-admin.js";
 import cors from "../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
   await cors(req, res);
@@ -13,17 +14,11 @@ async function handler(req, res) {
 
       // Validaciones
       if (!service?.name) {
-        return res.status(400).json({
-          success: false,
-          error: "El nombre del servicio es requerido",
-        });
+        return fail(res, "El nombre del servicio es requerido");
       }
 
       if (!service?.price || service.price <= 0) {
-        return res.status(400).json({
-          success: false,
-          error: "El precio debe ser mayor a 0",
-        });
+        return fail(res, "El precio debe ser mayor a 0");
       }
 
       // Si se está actualizando un servicio existente
@@ -46,24 +41,15 @@ async function handler(req, res) {
       // Guardar en Firebase
       await db.ref(`${path}/${service.name}`).set(serviceData);
 
-      return res.status(200).json({
-        success: true,
-        message: serviceOldName ? "Servicio actualizado" : "Servicio creado",
-        data: serviceData,
-      });
+      return success(res, serviceData);
     } catch (error) {
       console.error("Error en addService:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Error interno del servidor",
-      });
+
+      return fail(res, "Error interno del servidor");
     }
   }
 
-  return res.status(405).json({
-    success: false,
-    error: "Método no permitido",
-  });
+  return fail(res, "Método no permitido", 405);
 }
 
 export default handler;
