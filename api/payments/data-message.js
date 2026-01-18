@@ -2,12 +2,8 @@ import { sendMessage } from "../../twilioFunctions.js";
 import cors from "../_middlewares/cors.js";
 
 export default async function handler(req, res) {
-  await cors(req, res);
-
-  if (req.method === "OPTIONS") {
-    // Responde a las preflight requests de CORS
-    return res.status(200).end();
-  }
+  const handled = await cors(req, res);
+  if (handled) return;
 
   if (req.method === "POST") {
     try {

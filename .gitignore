@@ -11,6 +11,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Firebase
+firebase-creds.json
+firebase-creds-oneline.json
 firebase-*.json
 service-account*.json
 .

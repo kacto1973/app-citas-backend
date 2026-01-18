@@ -3,12 +3,8 @@ import cors from "../_middlewares/cors.js";
 import { success, fail } from "../../utils/response.js";
 
 export default async function handler(req, res) {
-  await cors(req, res);
-
-  if (req.method === "OPTIONS") {
-    // Responde a las preflight requests de CORS
-    return res.status(200).end();
-  }
+  const handled = await cors(req, res);
+  if (handled) return;
 
   if (req.method === "POST") {
     try {
@@ -59,7 +55,7 @@ export default async function handler(req, res) {
 
       console.log(
         "se recibe este business id del front para hacerlo una orden en mercado pago: ",
-        business_id
+        business_id,
       );
 
       const response = await preference.create({ body });

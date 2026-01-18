@@ -3,7 +3,8 @@ import cors from "../_middlewares/cors.js";
 import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
-  await cors(req, res);
+  const handled = await cors(req, res);
+  if (handled) return;
 
   // GET - Obtener citas pagadas
   if (req.method === "GET") {
@@ -17,11 +18,11 @@ async function handler(req, res) {
           ([id, apt]) => ({
             id,
             ...apt,
-          })
+          }),
         );
 
         const paidAppointments = appointmentsArray.filter(
-          (appointment) => appointment.state === "pagado"
+          (appointment) => appointment.state === "pagado",
         );
 
         return success(res, { appointments: paidAppointments }, 200);

@@ -3,7 +3,8 @@ import cors from "../_middlewares/cors.js";
 import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
-  await cors(req, res);
+  const handled = await cors(req, res);
+  if (handled) return;
 
   // POST - Registrar nuevo cliente
   if (req.method === "POST") {
@@ -32,7 +33,7 @@ async function handler(req, res) {
         return fail(
           res,
           "Ya existe un cliente con este número de teléfono",
-          409
+          409,
         );
       }
 
