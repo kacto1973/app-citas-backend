@@ -1,7 +1,7 @@
 import { ref, get, remove, update } from "firebase/database";
 import { db as database } from "../../lib/firebase-admin.js";
 import { DateTime } from "luxon";
-import cors from "../_middlewares/cors.js";
+import cors from "../../_middlewares/cors.js";
 
 export default async function handler(req, res) {
   await cors(req, res);
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
         // Leer citas activas del negocio
         const appointmentsSnap = await get(
-          ref(database, `businesses/${businessID}/activeAppointments`)
+          ref(database, `businesses/${businessID}/activeAppointments`),
         );
 
         if (appointmentsSnap.exists()) {
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
                 `businesses/${businessID}/activeAppointments/${appointmentID}`
               ] = null;
               console.log(
-                `Cita ${appointmentID} eliminada en negocio ${businessID} por antigüedad.`
+                `Cita ${appointmentID} eliminada en negocio ${businessID} por antigüedad.`,
               );
             }
 
@@ -68,13 +68,13 @@ export default async function handler(req, res) {
               appointment.selectedDate === theDayAfter
             ) {
               console.log(
-                "cita creada y seleccionada para el mismo dia o el dia siguiente, no se elimina"
+                "cita creada y seleccionada para el mismo dia o el dia siguiente, no se elimina",
               );
               continue;
             }
 
             console.log(
-              "la cita se creo en un dia distinto al seleccionado (no es intradia)"
+              "la cita se creo en un dia distinto al seleccionado (no es intradia)",
             );
 
             const createdAt = new Date(appointment.createdAt);
@@ -87,14 +87,14 @@ export default async function handler(req, res) {
             // Eliminar citas no pagadas después de 12 horas
             if (appointment.state === "no pagado" && diffInHours >= 12) {
               console.log(
-                "es una cita no pagada y tiene más de 12 horas, se elimina"
+                "es una cita no pagada y tiene más de 12 horas, se elimina",
               );
 
               updates[
                 `businesses/${businessID}/activeAppointments/${appointmentID}`
               ] = null;
               console.log(
-                `Cita ${appointmentID} eliminada en negocio ${businessID} por falta de anticipo.`
+                `Cita ${appointmentID} eliminada en negocio ${businessID} por falta de anticipo.`,
               );
               continue;
             }
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
 
         // Leer días de descanso (restdays) del negocio
         const restdaysSnap = await get(
-          ref(database, `businesses/${businessID}/restdays`)
+          ref(database, `businesses/${businessID}/restdays`),
         );
 
         if (restdaysSnap.exists()) {
@@ -116,7 +116,7 @@ export default async function handler(req, res) {
             if (restday < todayFormatted) {
               updates[`businesses/${businessID}/restdays/${restdayID}`] = null;
               console.log(
-                `Día de descanso ${restdayID} eliminado en negocio ${businessID} por antigüedad.`
+                `Día de descanso ${restdayID} eliminado en negocio ${businessID} por antigüedad.`,
               );
             }
           }
@@ -127,7 +127,7 @@ export default async function handler(req, res) {
         console.log(
           `Negocio ${businessID} procesado en ${
             businessEndTime[0]
-          } segundos y ${businessEndTime[1] / 1e6} milisegundos.`
+          } segundos y ${businessEndTime[1] / 1e6} milisegundos.`,
         );
       }
 
@@ -143,7 +143,7 @@ export default async function handler(req, res) {
     console.log(
       `Cron job completado en ${endTime[0]} segundos y ${
         endTime[1] / 1e6
-      } milisegundos.`
+      } milisegundos.`,
     );
 
     return res.status(200).json({
@@ -160,7 +160,7 @@ export default async function handler(req, res) {
     console.log(
       `Cron job falló después de ${endTime[0]} segundos y ${
         endTime[1] / 1e6
-      } milisegundos.`
+      } milisegundos.`,
     );
 
     return res.status(500).json({

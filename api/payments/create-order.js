@@ -1,5 +1,5 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import cors from "../_middlewares/cors.js";
+import cors from "../../_middlewares/cors.js";
 import { success, fail } from "../../utils/response.js";
 
 export default async function handler(req, res) {

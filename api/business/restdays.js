@@ -1,5 +1,5 @@
 import { db } from "../../lib/firebase-admin.js";
-import cors from "../_middlewares/cors.js";
+import cors from "../../_middlewares/cors.js";
 import { success, fail } from "../../utils/response.js";
 
 async function handler(req, res) {
