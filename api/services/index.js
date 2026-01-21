@@ -1,7 +1,7 @@
 // api/services.js
-import { db } from "../lib/firebase-admin.js";
-import cors from "../_middlewares/cors.js";
-import { success, fail } from "../utils/response.js";
+import { db } from "../../lib/firebase-admin.js";
+import cors from "../../_middlewares/cors.js";
+import { success, fail } from "../../utils/response.js";
 
 export default async function handler(req, res) {
   const handled = await cors(req, res);
