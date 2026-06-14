@@ -49,6 +49,10 @@ export default async function handler(req, res) {
   // 3. POST crear cita
   if (req.method === "POST") {
     try {
+      if (!req.body.payload) {
+        return fail(res, "No se envió el payload", 400);
+      }
+
       const {
         servicesCart,
         totalCost,
@@ -58,19 +62,7 @@ export default async function handler(req, res) {
         userFullName,
         totalDurationOfAppointment,
         cellphone,
-      } = req.body;
-
-      if (
-        !servicesCart ||
-        !Array.isArray(servicesCart) ||
-        servicesCart.length === 0
-      ) {
-        return fail(res, "Carrito vacío", 400);
-      }
-
-      if (!cellphone) {
-        return fail(res, "Teléfono requerido", 400);
-      }
+      } = req.body.payload;
 
       const newAppointmentRef = db.ref(path).push();
       const dateString = new Date(selectedDate).toISOString().split("T")[0];

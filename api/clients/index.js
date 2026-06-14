@@ -57,7 +57,7 @@ export default async function handler(req, res) {
   }
 
   // 3. POST registrar cliente
-  if (req.method === "POST") {
+  if (req.method === "POST" && !req.query.action) {
     try {
       const { fullName, cellphone } = req.body;
 
@@ -84,12 +84,6 @@ export default async function handler(req, res) {
       const clientObject = {
         fullName: fullName.trim(),
         cellphone: cellphone.trim(),
-        activeAppointments: [],
-        totalAppointments: 0,
-        totalSpent: 0,
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        consent: true,
       };
 
       const newClientRef = db.ref(path).push();

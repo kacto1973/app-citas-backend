@@ -21,7 +21,7 @@ async function handler(req, res) {
         return success(res, null);
       }
     } catch (error) {
-      console.error("Error en getAllRestDays:", error);
+      console.error("Error en get/restdays:", error);
       return fail(res, "Error interno del servidor", 500);
     }
   }
@@ -29,48 +29,51 @@ async function handler(req, res) {
   // POST - Agregar días no laborales
   if (req.method === "POST") {
     try {
-      const { action, days } = req.body;
+      const { days } = req.body;
 
       if (!days || !Array.isArray(days) || days.length === 0) {
         return fail(res, "Se requiere un array de días válido", 400);
       }
 
-      if (action === "add") {
-        // Agregar días
-        for (const day of days) {
-          await db.ref(path).push().set(day);
-        }
-
-        return success(res, null);
+      for (const day of days) {
+        await db.ref(path).push(day);
       }
 
-      if (action === "remove") {
-        // Eliminar días
-        const snapshot = await db.ref(path).once("value");
-
-        if (snapshot.exists()) {
-          const restDays = snapshot.val();
-          let removedCount = 0;
-
-          for (const key in restDays) {
-            if (restDays.hasOwnProperty(key)) {
-              const day = restDays[key];
-              if (days.includes(day)) {
-                await db.ref(`${path}/${key}`).remove();
-                removedCount++;
-              }
-            }
-          }
-
-          return success(res, null);
-        } else {
-          return success(res, null);
-        }
-      }
-
-      return fail(res, "Acción no válida. Use 'add' o 'remove'", 400);
+      return success(res, null);
     } catch (error) {
-      console.error("Error en add/removeRestDays:", error);
+      console.error("Error en add/restdays:", error);
+      return fail(res, "Error interno del servidor", 500);
+    }
+  }
+
+  if (req.method === "DELETE") {
+    try {
+      const { days } = req.body;
+
+      if (!days || !Array.isArray(days) || days.length === 0) {
+        return fail(res, "Debe proporcionar un array de días a eliminar");
+      }
+
+      const snapshot = await db.ref(path).once("value");
+      let removedCount = 0;
+
+      if (snapshot.exists()) {
+        const restDays = snapshot.val();
+
+        const daysToDelete = new Set(days);
+
+        for (const key in restDays) {
+          const dayValue = restDays[key];
+
+          if (daysToDelete.has(dayValue)) {
+            await db.ref(`${path}/${key}`).remove();
+            removedCount++;
+          }
+        }
+      }
+      return success(res, { removedCount: removedCount });
+    } catch (error) {
+      console.error("Error en delete/restdays:", error);
       return fail(res, "Error interno del servidor", 500);
     }
   }

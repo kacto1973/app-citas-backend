@@ -24,7 +24,7 @@ async function handler(req, res) {
 
         let adminUsername = "";
         const foundAdmin = adminsArray.some((admin) => {
-          if (admin.password === password.toLowerCase()) {
+          if (admin.password === password) {
             adminUsername = admin.username;
             return true;
           }

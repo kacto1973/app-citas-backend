@@ -7,11 +7,10 @@ export default async function handler(req, res) {
   const handled = await cors(req, res);
   if (handled) return;
 
-  const { name } = req.query;
   const path = "businesses/mb_salon/menu/services";
 
   // 1. GET TODOS los servicios
-  if (req.method === "GET" && !name) {
+  if (req.method === "GET") {
     try {
       const snapshot = await db.ref(path).once("value");
 
@@ -26,52 +25,82 @@ export default async function handler(req, res) {
     }
   }
 
-  // 2. DELETE eliminar servicio por nombre
-  if (req.method === "DELETE" && name) {
+  // 2. POST crear servicio
+  if (req.method === "POST") {
     try {
+      const { service } = req.body;
+
+      if (!service) {
+        return fail(res, "Servicio no proporcionado");
+      }
+
+      // Crear objeto del servicio
+      const serviceData = {
+        duration: Number(service.duration),
+        name: service.name,
+        price: Number(service.price),
+        restTime: Number(service.restTime),
+      };
+
+      // Guardar en Firebase
+      await db.ref(`${path}/${service.name}`).set(serviceData);
+      return success(res, null);
+    } catch (error) {
+      console.error("Error:", error);
+      return fail(res, "Error agregando servicio");
+    }
+  }
+
+  //3. PUT actualizar servicio
+  if (req.method === "PUT") {
+    try {
+      const { service, serviceOldName } = req.body;
+      if (!service) {
+        return fail(res, "Servicio no proporcionado");
+      }
+      if (!serviceOldName) {
+        return fail(res, "Nombre antiguo del servicio no proporcionado");
+      }
+
+      // Crear objeto del servicio
+      const serviceData = {
+        duration: Number(service.duration),
+        name: service.name,
+        price: Number(service.price),
+        restTime: Number(service.restTime),
+      };
+
+      if (serviceOldName !== service.name) {
+        // Guardar en Firebase bajo nuevo nombre y eliminar el antiguo
+        await db.ref(`${path}/${service.name}`).set(serviceData);
+        await db.ref(`${path}/${serviceOldName}`).remove();
+      } else {
+        // Actualizar en Firebase bajo el mismo nombre
+        await db.ref(`${path}/${serviceOldName}`).set(serviceData);
+      }
+
+      return success(res, null);
+    } catch (error) {
+      console.error("Error:", error);
+      return fail(res, "Error actualizando servicio");
+    }
+  }
+
+  // 4. DELETE eliminar servicio por nombre
+  if (req.method === "DELETE") {
+    try {
+      const { service } = req.body;
+      const name = service.name;
+
+      if (!name) {
+        return fail(res, "Nombre del servicio no proporcionado");
+      }
+
       await db.ref(`${path}/${name}`).remove();
       return success(res, null);
     } catch (error) {
       console.error("Error:", error);
       return fail(res, "Error eliminando servicio");
-    }
-  }
-
-  // 3. POST crear/actualizar servicio
-  if (req.method === "POST") {
-    try {
-      const { service, serviceOldName } = req.body;
-
-      if (!service?.name) {
-        return fail(res, "Nombre del servicio requerido");
-      }
-
-      if (!service?.price || service.price <= 0) {
-        return fail(res, "Precio debe ser mayor a 0");
-      }
-
-      // Si se actualiza y cambió el nombre, eliminar el viejo
-      if (serviceOldName && serviceOldName !== service.name) {
-        await db.ref(`${path}/${serviceOldName}`).remove();
-      }
-
-      // Crear objeto del servicio
-      const serviceData = {
-        name: service.name,
-        price: Number(service.price),
-        duration: Number(service.duration) || 60,
-        description: service.description || "",
-        active: service.active !== undefined ? service.active : true,
-        createdAt: service.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      // Guardar en Firebase
-      await db.ref(`${path}/${service.name}`).set(serviceData);
-      return success(res, serviceData);
-    } catch (error) {
-      console.error("Error:", error);
-      return fail(res, "Error");
     }
   }
 
